@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<title>Инфопоиск</title>
+	 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta charset="utf-8">
+		<!-- Bootstrap Core CSS -->
+    	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+	<style>
+	h1.header {
+	color:#E8DFC8;
+	}
+	.descr {
+	color: white
+	}
+	
+	p {font-size: 13pt}
+	
+	ul {list-style: none}
+	
+	li {margin-bottom: 10px}
+	
+	</style>
+	
+	</head>
+	<body>
+		<nav id="mainNav" class="navbar navbar-default navbar-fixed-top navbar-custom">
+			<div class="container"> 
+				
+				<nav class="collapse navbar-collapse" id="bs-navbar"> 
+					<ul class="nav navbar-nav navbar-right"> 
+						<li> <a href="/">Главная страница</a> </li> 
+					</ul>
+				</nav> 
+			</div>
+		</nav>
+		<header style="background-color:#086375; padding-top:70px; "> 
+			<div class="container"> 
+				<div class="row">
+					<div class="col-md-4">
+						<br/><br/>
+						<h1 class="header">Инфопоиск</h1>
+						<hr>
+						<p class="descr"><i>Жарикова Дарья, БКЛ-162
+</i></p><br/>
+	                </div>
+					<div class="col-md-4">
+        	           
+					</div>
+	            </div>
+			</div>
+		</header>
+
+		<section id="portfolio">
+			<div class="container" >
+				<div class="col-md-12" >
+				<form method="GET">
+				<p><b>Введите запрос</b> <input type="text" name="user_query"></p>
+    				<p><b>На что смотреть будем?</b></p>
+    				<input type="radio" name="type_metrics" value="BM25">  BM25<Br>
+    				<input type="radio" name="type_metrics" value="tf">  TFIDF<Br>
+    				<input type="radio" name="type_metrics" value="fasttext">  Fasttext<Br>
+				<input type="submit" value="Отправить">
+ 				</form>
+				<br/><br/>
+			</div>
+		</section>
+		<footer class="bs-docs-footer"> 
+			<div class="container"> 
+				<p style="text-align:right; ">2019 г. </p> 
+			</div>
+		</footer>	
+		
+	</body>
+</html>
