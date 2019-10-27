@@ -98,10 +98,3 @@ for character in characters:
     except KeyError:
         break
 print('Самое популярный герой:', d[max(d.keys())], max(d.keys()))
-
-
-# In[ ]:
-
-
-
-
