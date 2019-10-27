@@ -1,28 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# ## Лекция 2  BM5    
-
-# ## Функция ранжирования bm25
-
-# Для обратного индекса есть общепринятая формула для ранжирования *Okapi best match 25* ([Okapi BM25](https://ru.wikipedia.org/wiki/Okapi_BM25)).    
-# Пусть дан запрос $Q$, содержащий слова  $q_1, ... , q_n$, тогда функция BM25 даёт следующую оценку релевантности документа $D$ запросу $Q$:
-# 
-# $$ score(D, Q) = \sum_{i}^{n} \text{IDF}(q_i)*\frac{TF(q_i,D)*(k+1)}{TF(q_i,D)+k(1-b+b\frac{l(d)}{avgdl})} $$ 
-# где   
-# >$TF(q_i,D)$ - частота слова $q_i$ в документе $D$      
-# $l(d)$ - длина документа (количество слов в нём)   
-# *avgdl* — средняя длина документа в коллекции    
-# $k$ и $b$ — свободные коэффициенты, обычно их выбирают как $k$=2.0 и $b$=0.75   
-# $$$$
-# $\text{IDF}(q_i)$ - это модернизированная версия IDF: 
-# $$\text{IDF}(q_i) = \log\frac{N-n(q_i)+0.5}{n(q_i)+0.5},$$
-# >> где $N$ - общее количество документов в коллекции   
-# $n(q_i)$ — количество документов, содержащих $q_i$
-
-# In[47]:
-
-
 from pymorphy2 import MorphAnalyzer
 from nltk.tokenize import WordPunctTokenizer
 import os
@@ -37,15 +12,7 @@ morph = MorphAnalyzer()
 vec = CountVectorizer()
 vec_bin = CountVectorizer(binary=True)
 
-
-# In[48]:
-
-
 table_csv = pd.read_csv('quora_question_pairs_rus.csv', index_col='Unnamed: 0')
-
-
-# In[49]:
-
 
 def preproc(el):
     t = str(el)
@@ -90,10 +57,6 @@ def doc_vectorizer(column):
     df_bin = pd.DataFrame(Y.toarray(), columns=vec.get_feature_names(), index=idxs) 
     return df, df_bin
 
-
-# In[50]:
-
-
 def create_inverse_counter(binary_1, binary_q):
     word_counter_dict = {}
     for column in binary_q.columns:
@@ -126,17 +89,6 @@ def dl_avgdl(data):
     sums_normalized = sums.div(avg)
     return sums_normalized, avg  
 
-
-# In[51]:
-
-
-# little_corp = corpus_query[:10000] #значит у нас есть повторяющиеся query
-# print(len(set(little_corp)))
-
-
-# In[52]:
-
-
 def dict_relev(data):
     num = 0
     id_relev={}
@@ -159,10 +111,6 @@ def dict_relev(data):
                 pass
     return id_relev
 
-
-# In[53]:
-
-
 q_df, q_df_bin = query_mat(table_csv['question1'][:50])
 doc_df, doc_df_bin = doc_vectorizer(table_csv['question2'][:50])
 
@@ -183,34 +131,7 @@ inv_df = create_inverse_counter(q_df_bin, doc_df_bin)
 
 idfs = create_idf_table(inv_df, q_df_bin.shape[0])
 
-
-# In[81]:
-
-
-str(4) in relevant_data[str(4)]
-
-
-# In[54]:
-
-
-q_df
-
-
-# In[55]:
-
-
 queries = table_csv['question1'][:50]
-
-
-# In[56]:
-
-
-# for query in queries:
-#     print (query)
-
-
-# In[57]:
-
 
 k = 2.0
 b = 0.75
@@ -225,15 +146,7 @@ def bm_25(doc_idx, query, wordlist, docs_num, tfs, idfs, c1, c2):
             bm_val += bm_i
     return bm_val
 
-
-# In[ ]:
-
-
 bm_25()
-
-
-# In[103]:
-
 
 def final(doc_data, q_data, relevant_data, is_rel, tfs, idfs, dls_norm, k, b):
     res_table = pd.DataFrame(columns=['query', 'relevant_docs', 'res'])
@@ -269,25 +182,9 @@ def final(doc_data, q_data, relevant_data, is_rel, tfs, idfs, dls_norm, k, b):
         rel_sorted = {} #обнуляем
         best_5_rel = []
     return res_table        
-
-
-# In[104]:
-
-
 results = final (doc_df, q_df, relevant_data, is_dupl, tf_table, idfs, dls, k, b)
 
-
-# In[105]:
-
-
-results
-
-
-# In[107]:
-
-
 from sklearn.metrics import accuracy_score
-#функция метрики (кирилллл подсказал)
 def metric(y_true, y_pred):
     y_true = list(y_true)
     y_pred = list(y_pred)
@@ -295,18 +192,9 @@ def metric(y_true, y_pred):
     return acc
 
 metric(is_dupl, results['res'])
-
+ #1.0 невероятно
 
 # # Матрицы ура
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
 
 q_df, q_df_bin = query_mat(table_csv['question1'][:10000])
 doc_df, doc_df_bin = doc_vectorizer(table_csv['question2'][:10000])
@@ -363,29 +251,3 @@ def matrix_best_5(d, correspondence, is_rel):
 bm_25_matrices = matrix_multiplication(q1_df_bin, q2_df_bin, tf_table, idfs, dls, k, b)
 
 results_matrix = matrix_best_5(bm_25_matrices, relevant_data, is_dupl)
-
-
-# ### __Задача 1__:    
-# Напишите два поисковика на *BM25*. Один через подсчет метрики по формуле для каждой пары слово-документ, второй через умножение матрицы на вектор. 
-# 
-# Сравните время работы поиска на 100к запросах. В качестве корпуса возьмем 
-# [Quora question pairs](https://www.kaggle.com/loopdigga/quora-question-pairs-russian).
-
-# In[ ]:
-
-
-
-
-
-# ### __Задача 2__:    
-# 
-# 
-
-# Выведите 10 первых результатов и их близость по метрике BM25 по запросу **рождественские каникулы** на нашем корпусе  Quora question pairs. 
-
-# ### __Задача 3__:    
-# 
-# Посчитайте точность поиска при 
-# 1. BM25, b=0.75 
-# 2. BM15, b=0 
-# 3. BM11, b=1
